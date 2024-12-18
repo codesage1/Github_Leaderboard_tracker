@@ -9,6 +9,7 @@ import ThemeToggle from './components/ThemeToggle';
 import { useGitHubData } from './hooks/useGitHubData';
 import { sortDevelopers } from './utils/sorting';
 import { Toaster } from 'react-hot-toast';
+import { Footer } from './components/Footer';
 
 export default function App() {
   const [filters, setFilters] = useState<LeaderboardFilters>({
@@ -38,20 +39,23 @@ export default function App() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-red-500 text-center">
-          <h2 className="text-2xl font-bold mb-2">Error</h2>
-          <p>{error}</p>
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-red-500 text-center">
+            <h2 className="text-2xl font-bold mb-2">Error</h2>
+            <p>{error}</p>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col transition-colors duration-300">
       <Toaster position="top-right" />
       <ThemeToggle />
-      <div className="container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8">
         <LeaderboardHeader
           onSearch={(query) => handleFilterChange({ searchQuery: query })}
           onTimeRangeChange={(range) => handleFilterChange({ timeRange: range })}
@@ -84,7 +88,8 @@ export default function App() {
             ))}
           </div>
         )}
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

@@ -7,7 +7,26 @@ export async function fetchGitHubUser(username: string): Promise<Developer | nul
       `${githubConfig.apiUrl}/users/${username}`,
       { headers: githubConfig.headers }
     );
-    if (!response.ok) return null;
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('GitHub API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
+      
+      if (response.status === 401) {
+        throw new Error('GitHub token is invalid or expired. Please check your token.');
+      }
+      if (response.status === 403) {
+        throw new Error('Rate limit exceeded or token permissions issue. Please check your token.');
+      }
+      if (response.status === 404) {
+        throw new Error('Developer not found on GitHub.');
+      }
+      throw new Error(`GitHub API error: ${response.statusText}`);
+    }
     
     const userData: GitHubUser = await response.json();
     const contributions = await fetchContributions(username);
@@ -26,7 +45,7 @@ export async function fetchGitHubUser(username: string): Promise<Developer | nul
     };
   } catch (error) {
     console.error('Error fetching GitHub user:', error);
-    return null;
+    throw error;
   }
 }
 

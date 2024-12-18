@@ -18,18 +18,17 @@ export function useGitHubData() {
 
     try {
       setLoading(true);
+      setError(null);
       const developer = await fetchGitHubUser(username);
       
       if (developer) {
         setDevelopers(prev => [...prev, { ...developer, isFriend: true }]);
         toast.success(`Successfully added ${developer.name} to the leaderboard!`);
         return true;
-      } else {
-        toast.error('Developer not found on GitHub');
-        return false;
       }
+      return false;
     } catch (err) {
-      const message = 'Failed to add developer';
+      const message = err instanceof Error ? err.message : 'Failed to add developer';
       setError(message);
       toast.error(message);
       return false;
